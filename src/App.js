@@ -1,23 +1,50 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState } from "react";
+import "./App.css";
 
 function App() {
+  const [users, setUser] = useState([]);
+
+  useEffect(() => {
+    fetch("http://localhost:8000/user")
+      .then((res) => res.json())
+      .then((data) => setUser(data));
+    console.log(users.length);
+  }, []);
+
+  const handleClick = (e) => {
+    e.preventDefault();
+    const name = e.target.name.value;
+    const email = e.target.email.value;
+    console.log(name, email);
+    const user = {name, email}
+
+    // post data to server
+
+    fetch("http://localhost:8000/user", {
+      method: "POST",
+      headers: {
+      
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(user),
+    })
+    .then((res) => res.json())
+    .then(data => {
+      console.log(data);
+    })
+  };
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>my own data : {users.length}</h1>
+      <form onSubmit={handleClick}>
+        <input type="text" name="name" />
+        <input type="email" name="email" id="" />
+        <input type="submit" value="submit" />
+      </form>
+
+      {users.map((user) => (
+        <p>{user.name}</p>
+      ))}
     </div>
   );
 }
